@@ -1,0 +1,20 @@
+{
+  "name": "socketio-demo",
+  "version": "0.1.0",
+  "description": "socket.io demo",
+  "main": "server.js",
+  "author": "Takenori Nakagawa",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.5.0",
+    "redis": "^0.10.3",
+    "socket.io": "^1.0.6",
+    "socket.io-redis": "^0.1.3"
+  },
+  "private": true,
+  "devDependencies": {
+    "chai": "^1.9.1",
+    "mocha": "^1.20.1",
+    "socket.io-client": "^1.0.6"
+  }
+}

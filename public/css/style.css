@@ -1,0 +1,25 @@
+
+canvas {
+  max-width: 1000px;
+}
+
+.filter {
+  -webkit-filter: blur(3px) grayscale(1);
+  -moz-filter: blur(3px) grayscale(1);
+  -ms-filter: blur(3px) grayscale(1);
+  -o-filter: blur(3px) grayscale(1);
+  filter: blur(3px) grayscale(1);
+}
+
+.hide {
+  display: none;
+}
+
+.video-stream {
+  width: 100%;
+  max-width: 1280px;
+  margin: 10px 0;
+  background-color: #ccc;
+  border: 1px solid #ccc;
+  box-sizing: border-box;
+}

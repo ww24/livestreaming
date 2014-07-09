@@ -1,0 +1,13 @@
+.*
+!.gitignore
+
+# Node.js
+.log
+node_modules
+
+# Windows
+Thumbs.db
+
+# secret
+web.pfx
+config.json
