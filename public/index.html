@@ -5,22 +5,37 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
 	<link rel="stylesheet" href="css/bootstrap.min.css">
 	<link rel="stylesheet" href="css/style.css">
-	<title>Socket.IO 1.0 Demo</title>
-	<body>
-		<h1>Socket.IO 1.0 Demo</h1>
-		<div class="container">
+	<title>Screen Live Streaming</title>
+	<body class="top">
+		<h1>Screen Live Streaming</h1>
+		<div class="container top">
+			<p>あなたのデスクトップをライブ配信します。</p>
+		</div>
+		<div class="container watch">
 			<div class="row">
-				<video id="display" class="video-stream" poster="img/1280x720.gif"></video>
+				<video id="display-watch" class="video-stream" autoplay></video>
 			</div>
-			<div>
-				<button id="stop" class="btn btn-default" disabled>STOP</button>
-				<button id="live" class="btn btn-default">LIVE</button>
+		</div>
+		<div class="container live">
+			<div class="row">
+				<video id="display-live" class="video-stream" poster="img/1280x720.gif"></video>
+			</div>
+			<div class="row">
+				<div class="col-xs-5">
+					<button id="stop" class="btn btn-default" disabled>STOP</button>
+					<button id="live" class="btn btn-default">LIVE</button>
+				</div>
+				<div class="col-xs-7">
+					<input id="video_url" class="form-control" type="text" placeholder="Streaming URL" readonly>
+				</div>
 			</div>
 		</div>
 
 		<script src="js/jquery.min.js"></script>
 		<script src="/socket.io/socket.io.js"></script>
 		<script src="js/MediaStreamRecorder.js"></script>
+		<script src="js/live.js"></script>
+		<script src="js/watch.js"></script>
 		<script src="js/streaming.js"></script>
 	</body>
 </head>

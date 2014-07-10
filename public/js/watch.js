@@ -1,17 +1,13 @@
 /* globals io */
-/**
- * Video Streaming Viewer
- *
- */
 
-$(function () {
-  var video = $("#display").get(0);
+window.page || (window.page = {});
+
+page.watch = function () {
+  "use strict";
 
   var socket = io.connect();
 
-  socket.on("evt", function (msg) {
-    console.log(msg);
-  });
+  var video = $("#display-watch").get(0);
 
   socket.on("video", function (data) {
     console.log(data);
@@ -22,4 +18,4 @@ $(function () {
       URL.revokeObjectURL(video.src);
     });
   });
-});
+};

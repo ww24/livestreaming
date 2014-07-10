@@ -8,6 +8,11 @@ node_modules
 # Windows
 Thumbs.db
 
+# Redis
+redis/*
+!redis/redis.conf.sample
+!redis/stop.js
+
 # secret
 web.pfx
 config.json

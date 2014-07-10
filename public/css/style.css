@@ -23,3 +23,17 @@ canvas {
   border: 1px solid #ccc;
   box-sizing: border-box;
 }
+
+/* page changing */
+.container {
+  display: none;
+}
+body.top .top {
+  display: block;
+}
+body.watch .watch {
+  display: block;
+}
+body.live .live {
+  display: block;
+}
