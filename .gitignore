@@ -2,7 +2,7 @@
 !.gitignore
 
 # Node.js
-.log
+*.log
 node_modules
 
 # Windows
