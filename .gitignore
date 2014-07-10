@@ -10,7 +10,7 @@ Thumbs.db
 
 # Redis
 redis/*
-!redis/redis.conf.sample
+!redis/redis.sample.conf
 !redis/stop.js
 
 # secret
