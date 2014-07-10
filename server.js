@@ -92,4 +92,4 @@ app.get("/*", function (req, res) {
   res.sendfile(path.resolve(__dirname, "public/index.html"));
 });
 
-server.listen(3000);
+server.listen(config.server.port);
