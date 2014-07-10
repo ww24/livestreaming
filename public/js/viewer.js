@@ -5,9 +5,7 @@
  */
 
 $(function () {
-  var cvs = $("#display").get(0);
-  cvs.width = cvs.height = 0;
-  var ctx = cvs.getContext("2d");
+  var video = $("#display").get(0);
 
   var socket = io.connect();
 
@@ -15,24 +13,13 @@ $(function () {
     console.log(msg);
   });
 
-  var img = document.createElement("img");
-  socket.on("image", function (data) {
-    var blob = new Blob([data.image], {type: data.type});
-    img.src = URL.createObjectURL(blob);
+  socket.on("video", function (data) {
+    console.log(data);
 
-    // update canvas size
-    cvs.width === data.width || (cvs.width = data.width);
-    cvs.height === data.height || (cvs.height = data.height);
-
-    img.onload = function () {
-      ctx.drawImage(img, 0, 0);
-      URL.revokeObjectURL(img.src);
-    };
+    var blob = new Blob([data.video], {type: data.type});
+    video.src = URL.createObjectURL(blob);
+    video.addEventListener("loadeddata", function () {
+      URL.revokeObjectURL(video.src);
+    });
   });
-
-  // socket.on("video", function (data) {
-  //   console.log(data);
-  //   var url = URL.createObjectURL(data.stream);
-  //   console.log(url);
-  // });
 });

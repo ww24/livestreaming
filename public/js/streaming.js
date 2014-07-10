@@ -1,4 +1,4 @@
-/* globals io */
+/* globals io, MediaStreamRecorder */
 /**
  * video streaming over socket.io
  * author: Takenori Nakagawa
@@ -72,7 +72,7 @@ $(function () {
     var $display = $("#display"),
         video = $display.get(0);
 
-    var cvs = document.createElement("canvas");
+    var mediaRecorder = null;
 
     navigator.getUserMedia({
       video: {
@@ -85,16 +85,25 @@ $(function () {
         }
       }
     }, function (stream) {
+      // depends: MediaStreamRecorder.js
+      mediaRecorder = new MediaStreamRecorder(stream);
+      mediaRecorder.mimeType = "video/webm";
+      mediaRecorder.ondataavailable = function (blob) {
+        socket.emit("video", {
+          type: mediaRecorder.mimeType,
+          video: blob
+        });
+      };
+
       video.src = window.URL.createObjectURL(stream);
       video.addEventListener("loadeddata", function () {
-        cvs.width = video.videoWidth;
-        cvs.height = video.videoHeight;
+        mediaRecorder.width = video.videoWidth;
+        mediaRecorder.height = video.videoHeight;
 
         console.log("w:", video.videoWidth, "h:", video.videoHeight);
+        callback(true);
       });
       video.play();
-
-      callback(true);
     }, function (e) {
       console.error(e);
       alert("リソースへのアクセスを拒否されました。");
@@ -102,31 +111,13 @@ $(function () {
       callback(false);
     });
 
-    var ctx = cvs.getContext("2d");
-
-    var b64tob = new Worker("js/workers/base64ToBlob.js");
-    b64tob.addEventListener("message", function (e) {
-      socket.emit("image", {
-        image: e.data,
-        type: e.data.type,
-        width: cvs.width,
-        height: cvs.height
-      });
-    });
-
-    var ontimeupdate = function () {
-      ctx.drawImage(video, 0, 0);
-      var img = cvs.toDataURL("image/jpeg");
-      b64tob.postMessage(img);
-    };
-
     return {
       start: function () {
         // live streaming
-        $display.on("timeupdate", ontimeupdate);
+        mediaRecorder && mediaRecorder.start(5000);
       },
       stop: function () {
-        $display.off("timeupdate", ontimeupdate);
+        mediaRecorder && mediaRecorder.stop();
       }
     };
   }
