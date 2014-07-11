@@ -18,6 +18,10 @@ var express = require("express"),
 // clear all session
 models.Session.clear();
 
+// video_id manager
+var stream = new models.Stream("stream");
+stream.clear();
+
 var opt, server,
     app = express();
 if (config.ssl) {
@@ -51,6 +55,7 @@ io.on("connection", function (socket) {
     socket.broadcast.volatile.emit("image", data);
   });
 
+  // broadcast video data
   socket.on("video", function (data, callback) {
     session.get("video_id", function (err, video_id) {
       if (err) {
@@ -69,29 +74,61 @@ io.on("connection", function (socket) {
     socket.join(data.video_id);
   });
 
+  // associate video_id
   socket.on("live", function (callback) {
-    libs.id(2, function (err, video_id) {
-      if (err) {
-        return callback && callback({
-          error: err
-        });
-      }
-
-      session.set("video_id", video_id, function (err) {
+    (function generateVideoId() {
+      libs.id(2, function (err, video_id) {
         if (err) {
           return callback && callback({
             error: err
           });
         }
 
-        callback && callback({
-          video_id: video_id
+        stream.exist(video_id, function (err, res) {
+          if (err) {
+            return callback && callback({
+              error: err
+            });
+          }
+
+          stream.exist(video_id, function (err, res) {
+            if (err) {
+              return callback && callback({
+                error: err
+              });
+            }
+
+            // check video_id existence
+            if (res) {
+              // retry
+              return generateVideoId();
+            }
+
+            stream.set(video_id);
+            session.set("video_id", video_id, function (err) {
+              if (err) {
+                return callback && callback({
+                  error: err
+                });
+              }
+
+              callback && callback({
+                video_id: video_id
+              });
+            });
+          });
         });
       });
-    });
+    })();
   });
 
+  // disconnect event
   socket.on("disconnect", function () {
+    session.get("video_id", function (err, video_id) {
+      if (! err) {
+        stream.del(video_id);
+      }
+    });
     session.clear();
   });
 });
