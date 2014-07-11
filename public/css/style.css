@@ -25,7 +25,7 @@ canvas {
 }
 
 /* page changing */
-.container {
+.container > div {
   display: none;
 }
 body.top .top {

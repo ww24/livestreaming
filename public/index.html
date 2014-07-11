@@ -7,20 +7,35 @@
 	<link rel="stylesheet" href="css/style.css">
 	<title>Screen Live Streaming</title>
 	<body class="top">
-		<h1>Screen Live Streaming</h1>
-		<div class="container top">
-			<p>あなたのデスクトップをライブ配信します。</p>
-		</div>
-		<div class="container watch">
-			<div class="row">
+		<div class="container">
+			<div class="page-header live watch">
+				<h1>Screen Live Streaming</h1>
+			</div>
+
+			<div class="jumbotron top">
+				<h1>Screen Live Streaming</h1>
+				<p>あなたのデスクトップをライブ配信します。</p>
+				<p>
+					<span class="glyphicon glyphicon-ok-circle"></span>
+					Google Chrome のみで動作します。
+				</p>
+				<p>
+					<span class="glyphicon glyphicon-warning-sign"></span>
+					予め、スクリーンキャプチャのサポートを有効にする必要があります。
+				</p>
+				<p><code>chrome://flags/#enable-usermedia-screen-capture</code></p>
+				<p><a class="btn btn-lg btn-success" href="/live">Live Streaming</a></p>
+			</div>
+
+			<div class="row watch">
 				<video id="display-watch" class="video-stream" autoplay></video>
 			</div>
-		</div>
-		<div class="container live">
-			<div class="row">
+
+			<div class="row live">
 				<video id="display-live" class="video-stream" poster="img/1280x720.gif"></video>
 			</div>
-			<div class="row">
+
+			<div class="row live">
 				<div class="col-xs-5">
 					<button id="stop" class="btn btn-default" disabled>STOP</button>
 					<button id="live" class="btn btn-default">LIVE</button>
