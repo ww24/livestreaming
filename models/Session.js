@@ -14,18 +14,32 @@ module.exports = Session;
 function Session(id) {
   this.id = id;
 }
+Session.prefix = "sess:";
+Session.clear = function (callback) {
+  client.keys(this.prefix + "*", function (err, keys) {
+    if (err) {
+      return callback && callback(err);
+    }
+
+    var args = keys.concat(callback);
+    client.del.apply(client, args);
+  });
+};
 
 // get session
 Session.prototype.get = function (key, callback) {
-  client.hget(this.id, key, callback);
+  var c = this.constructor;
+  client.hget(c.prefix + this.id, key, callback);
 };
 
 // set session
 Session.prototype.set = function (key, value, callback) {
-  client.hset(this.id, key, value, callback);
+  var c = this.constructor;
+  client.hset(c.prefix + this.id, key, value, callback);
 };
 
 // clear session
 Session.prototype.clear = function (callback) {
-  client.del(this.id);
+  var c = this.constructor;
+  client.del(c.prefix + this.id, callback);
 };

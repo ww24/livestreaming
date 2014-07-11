@@ -15,6 +15,9 @@ var express = require("express"),
     models = require("./models"),
     config = require("./config.json");
 
+// clear all session
+models.Session.clear();
+
 var opt, server,
     app = express();
 if (config.ssl) {
