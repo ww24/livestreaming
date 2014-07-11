@@ -7,20 +7,27 @@ var express = require("express"),
     socketio = require("socket.io"),
     redisAdapter = require("socket.io-redis"),
     redis = require("redis"),
-    http = require("https"),
+    https = require("https"),
+    http = require("http"),
     path = require("path"),
     fs = require("fs"),
     libs = require("./libs"),
     models = require("./models"),
     config = require("./config.json");
 
-var opt = {
-  pfx: fs.readFileSync("web.pfx"),
-  passphrase: config.ssl.passphrase
-};
+var opt, server,
+    app = express();
+if (config.ssl) {
+  opt = {
+    pfx: fs.readFileSync(config.ssl.pfx),
+    passphrase: config.ssl.passphrase
+  };
 
-var app = express();
-var server = http.Server(opt, app);
+  server = https.Server(opt, app);
+} else {
+  server = http.Server(app);
+}
+
 var io = socketio(server);
 
 var redisopts = [config.redis.port, config.redis.host, {
