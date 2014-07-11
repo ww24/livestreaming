@@ -84,6 +84,7 @@ io.on("connection", function (socket) {
           });
         }
 
+        // get video_id existence info
         stream.exist(video_id, function (err, res) {
           if (err) {
             return callback && callback({
@@ -91,30 +92,22 @@ io.on("connection", function (socket) {
             });
           }
 
-          stream.exist(video_id, function (err, res) {
+          // check video_id existence
+          if (res) {
+            // retry
+            return generateVideoId();
+          }
+
+          stream.set(video_id);
+          session.set("video_id", video_id, function (err) {
             if (err) {
               return callback && callback({
                 error: err
               });
             }
 
-            // check video_id existence
-            if (res) {
-              // retry
-              return generateVideoId();
-            }
-
-            stream.set(video_id);
-            session.set("video_id", video_id, function (err) {
-              if (err) {
-                return callback && callback({
-                  error: err
-                });
-              }
-
-              callback && callback({
-                video_id: video_id
-              });
+            callback && callback({
+              video_id: video_id
             });
           });
         });
