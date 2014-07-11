@@ -67,11 +67,27 @@ io.on("connection", function (socket) {
       // check video_id existence
       if (! video_id) return;
       socket.broadcast.to(video_id).emit("video", data);
+
+      callback && callback();
     });
   });
 
-  socket.on("watch", function (data) {
-    socket.join(data.video_id);
+  socket.on("watch", function (data, callback) {
+    var video_id = data.video_id;
+    socket.join(video_id);
+    session.set("watch_id", video_id, function (err) {
+      if (err) {
+        return callback && callback(err);
+      }
+
+      // number of user connections
+      var connection_size = Object.keys(socket.adapter.rooms[video_id]).length - 1;
+      io.sockets.to(video_id).emit("metadata", {
+        connection_size: connection_size
+      });
+
+      callback && callback(null);
+    });
   });
 
   // associate video_id
@@ -106,6 +122,8 @@ io.on("connection", function (socket) {
               });
             }
 
+            socket.join(video_id);
+
             callback && callback({
               video_id: video_id
             });
@@ -120,6 +138,18 @@ io.on("connection", function (socket) {
     session.get("video_id", function (err, video_id) {
       if (! err) {
         stream.del(video_id);
+      }
+    });
+    session.get("watch_id", function (err, watch_id) {
+      if (! err) {
+        // number of user connections
+        var room = socket.adapter.rooms[watch_id];
+        if (room) {
+          var connection_size = Object.keys(room).length - 1;
+          io.sockets.to(watch_id).emit("metadata", {
+            connection_size: connection_size
+          });
+        }
       }
     });
     session.clear();

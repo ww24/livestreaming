@@ -16,7 +16,15 @@ socket.on("evt", function (msg) {
 $(function () {
   "use strict";
 
-  var $body = $("body");
+  var $body = $("body"),
+      $meta = $("#meta");
+
+
+  socket.on("metadata", function (data) {
+    if ($meta.length > 0) {
+      $meta.text(data.connection_size);
+    }
+  });
 
   var type = location.pathname.slice(1);
   if (type === "live") {
