@@ -6,7 +6,9 @@
  */
 
 // create socket.io connection
-var socket = io.connect();
+var socket = io.connect({
+  rememberUpgrade: true
+});
 socket.on("evt", function (msg) {
   console.log(msg);
 });
@@ -22,6 +24,11 @@ $(function () {
     page.live();
   } else if (/^r\w+$/.test(type)) {
     socket.emit("watch", {video_id: type.slice(1)});
+
+    socket.on("reconnect", function () {
+      socket.emit("watch", {video_id: type.slice(1)});
+    });
+
     $body.removeClass("top").addClass("watch");
     page.watch();
   } else if (type !== "") {
