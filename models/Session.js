@@ -14,11 +14,19 @@ module.exports = Session;
 function Session(id) {
   this.id = id;
 }
-Session.prefix = "sess:";
+Session.prefix = "iosess:";
 Session.clear = function (callback) {
+  if (this.prefix === "") {
+    return;
+  }
+
   client.keys(this.prefix + "*", function (err, keys) {
     if (err) {
       return callback && callback(err);
+    }
+
+    if (keys.length === 0) {
+      return callback && callback(null, 0);
     }
 
     var args = keys.concat(callback);
@@ -36,6 +44,12 @@ Session.prototype.get = function (key, callback) {
 Session.prototype.set = function (key, value, callback) {
   var c = this.constructor;
   client.hset(c.prefix + this.id, key, value, callback);
+};
+
+// set session
+Session.prototype.del = function (key, callback) {
+  var c = this.constructor;
+  client.hdel(c.prefix + this.id, key, callback);
 };
 
 // clear session
