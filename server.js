@@ -15,13 +15,14 @@ var express = require("express"),
     models = require("./models"),
     config = require("./config.json");
 
-// clear all session
+// clear all sessions
 models.Session.clear();
 
 // video_id manager
 var stream = new models.Stream("stream");
 stream.clear();
 
+// configure server and start
 var opt, server,
     app = express();
 if (config.ssl) {
@@ -34,18 +35,20 @@ if (config.ssl) {
 } else {
   server = http.Server(app);
 }
-
 var io = socketio(server);
+server.listen(config.server.port);
 
+// redis server settings
 var redisopts = [config.redis.port, config.redis.host, {
   auth_pass: config.redis.pass
 }];
-
+// associate redis with socket.io
 io.adapter(redisAdapter({
   pubClient: redis.createClient.apply(redis, redisopts),
   subClient: redis.createClient.apply(redis, redisopts)
 }));
 
+// connection event
 io.on("connection", function (socket) {
   var session = new models.Session(socket.id);
 
@@ -156,10 +159,10 @@ io.on("connection", function (socket) {
   });
 });
 
+// set static file path
 app.use(express.static(path.resolve(__dirname, "public")));
 
+// all route -> index.html
 app.get("/*", function (req, res) {
   res.sendfile(path.resolve(__dirname, "public/index.html"));
 });
-
-server.listen(config.server.port);
