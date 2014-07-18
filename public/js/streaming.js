@@ -17,26 +17,31 @@ $(function () {
   "use strict";
 
   var $body = $("body"),
-      $meta = $("#meta");
-
+      $connections = $("#connections"),
+      $status = $("#status");
 
   socket.on("metadata", function (data) {
-    if ($meta.length > 0) {
-      $meta.text(data.connection_size);
+    if ($connections.length > 0 && "connection_size" in data) {
+      $connections.text(data.connection_size);
+    }
+    if ($status.length > 0 && "status" in data) {
+      $status.text(data.status ? "online" : "offline");
     }
   });
 
   var type = location.pathname.slice(1);
+  var watch = socket.emit.bind(socket, "watch", {video_id: type.slice(1)}, function (data) {
+    if ($status.length > 0 && "status" in data) {
+      $status.text(data.status ? "online" : "offline");
+    }
+  });
+
   if (type === "live") {
     $body.removeClass("top").addClass("live");
     page.live();
   } else if (/^r\w+$/.test(type)) {
-    socket.emit("watch", {video_id: type.slice(1)});
-
-    socket.on("reconnect", function () {
-      socket.emit("watch", {video_id: type.slice(1)});
-    });
-
+    watch();
+    socket.on("reconnect", watch);
     $body.removeClass("top").addClass("watch");
     page.watch();
   } else if (type !== "") {

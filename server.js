@@ -77,6 +77,7 @@ io.on("connection", function (socket) {
 
   socket.on("watch", function (data, callback) {
     var video_id = data.video_id;
+    // join the room
     socket.join(video_id);
     session.set("watch_id", video_id, function (err) {
       if (err) {
@@ -89,7 +90,18 @@ io.on("connection", function (socket) {
         connection_size: connection_size
       });
 
-      callback && callback(null);
+      // get video_id existence info
+      stream.exist(video_id, function (err, res) {
+        if (err) {
+          return callback && callback({
+            error: err
+          });
+        }
+
+        callback && callback({
+          status: !! res
+        });
+      });
     });
   });
 
@@ -125,7 +137,15 @@ io.on("connection", function (socket) {
               });
             }
 
+            // join the room
             socket.join(video_id);
+
+            // number of user connections
+            var connection_size = Object.keys(socket.adapter.rooms[video_id]).length - 1;
+            io.sockets.to(video_id).emit("metadata", {
+              connection_size: connection_size,
+              status: true
+            });
 
             callback && callback({
               video_id: video_id
@@ -141,6 +161,14 @@ io.on("connection", function (socket) {
     session.get("video_id", function (err, video_id) {
       if (! err) {
         stream.del(video_id);
+
+        var room = socket.adapter.rooms[video_id];
+        if (room) {
+          var connection_size = Object.keys(room).length - 1;
+          io.sockets.to(video_id).emit("metadata", {
+            status: false
+          });
+        }
       }
     });
     session.get("watch_id", function (err, watch_id) {
